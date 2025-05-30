@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Company, BusinessUnit, Metric
-from .urls import MetricValue
+from .models import Company, BusinessUnit, Metric, MetricValue
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
