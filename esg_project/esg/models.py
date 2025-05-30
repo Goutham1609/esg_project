@@ -42,6 +42,7 @@ class MetricValue(models.Model):
     reporting_period = models.CharField(max_length=100)  # e.g., "2023", "Q1 2024"
     value = models.FloatField()
     unit = models.CharField(max_length=50, help_text="e.g., kWh, %, incidents")
+    year = models.IntegerField()
 
     def __str__(self):
         return f"{self.metric.name} - {self.business_unit.name} ({self.reporting_period})"
