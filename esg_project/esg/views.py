@@ -1,10 +1,10 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 from rest_framework.decorators import action
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from .models import Company, BusinessUnit, Metric, MetricValue
+from .models import Company, BusinessUnit, Metric, MetricValue, CustomUser
 from .serializers import (
     CompanySerializer,
     BusinessUnitSerializer,
@@ -17,8 +17,8 @@ from .serializers import UserSerializer
 from .permissions import IsAdmin, IsManager, IsViewer
 
 
-def home(request):
-    return HttpResponse("Welcome to the ESG API!")
+def api_home(request):
+    return JsonResponse({"message": "Welcome to the ESG API!"})
 
 
 class RegisterView(APIView):
