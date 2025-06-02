@@ -12,15 +12,37 @@ from .serializers import (
     MetricValueSerializer
 )
 from .services import get_company_metrics_summary
+from rest_framework.permissions import AllowAny
+from .serializers import UserSerializer
+from .permissions import IsAdmin, IsManager, IsViewer
+
 
 def home(request):
     return HttpResponse("Welcome to the ESG API!")
+
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = CustomUser.objects.create_user(
+                username=request.data['username'],
+                password=request.data['password'],
+                email=request.data.get('email', ''),
+                role=request.data.get('role', 'viewer')
+            )
+            return Response({"message": "User registered successfully."}, status=201)
+        return Response(serializer.errors, status=400)
     
+
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'sector']
+    permission_classes = [IsManager]
 
     @action(detail=True, methods=['get'], url_path='metrics-summary')
     def metrics_summary(self, request, pk=None):
@@ -28,6 +50,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
         if not summary:
             return Response({"detail": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(summary)
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsViewer()]
+        return [IsManager()]
 
 class BusinessUnitViewSet(viewsets.ModelViewSet):
     queryset = BusinessUnit.objects.all()
