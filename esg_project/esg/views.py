@@ -13,6 +13,7 @@ from .services import get_company_metrics_summary
 
 def home(request):
     return HttpResponse("Welcome to the ESG API!")
+    
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
