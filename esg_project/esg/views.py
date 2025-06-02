@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from rest_framework.decorators import action
+from rest_framework import filters
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from .models import Company, BusinessUnit, Metric, MetricValue
@@ -17,6 +18,8 @@ def home(request):
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'sector']
 
     @action(detail=True, methods=['get'], url_path='metrics-summary')
     def metrics_summary(self, request, pk=None):
@@ -32,6 +35,9 @@ class BusinessUnitViewSet(viewsets.ModelViewSet):
 class MetricViewSet(viewsets.ModelViewSet):
     queryset = Metric.objects.all()
     serializer_class = MetricSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'category']
+    ordering_fields = ['year', 'category']
 
 class MetricValueViewSet(viewsets.ModelViewSet):
     queryset = MetricValue.objects.all()
