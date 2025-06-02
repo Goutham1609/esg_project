@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
@@ -10,6 +11,8 @@ from .serializers import (
 )
 from .services import get_company_metrics_summary
 
+def home(request):
+    return HttpResponse("Welcome to the ESG API!")
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer

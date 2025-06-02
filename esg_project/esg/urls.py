@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import CompanyViewSet, BusinessUnitViewSet, MetricViewSet, MetricValueViewSet
@@ -9,5 +10,6 @@ router.register(r'metrics', MetricViewSet)
 router.register(r'metric-values', MetricValueViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
 ]
