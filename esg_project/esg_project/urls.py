@@ -15,11 +15,36 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from esg.views import home
+from django.urls import path, re_path, include
+from rest_framework.routers import DefaultRouter
+from django.views.generic import TemplateView
+
+from esg.views import (
+    CompanyViewSet,
+    BusinessUnitViewSet,
+    MetricViewSet,
+    MetricValueViewSet,
+    CompanyMetricsSummaryView
+)
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+router = DefaultRouter()
+router.register(r'companies', CompanyViewSet)
+router.register(r'business-units', BusinessUnitViewSet)
+router.register(r'metrics', MetricViewSet)
+router.register(r'metric-values', MetricValueViewSet)  # Register this
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('esg.urls')),
-    path('', home,),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api/company-metrics-summary/<int:company_id>/', CompanyMetricsSummaryView.as_view(), name='company_metrics_summary'),
+    path('api/', include(router.urls)),
+    re_path(r'^(?!api/|admin/).*$', TemplateView.as_view(template_name="index.html")),
 ]

@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from rest_framework.decorators import action
 from rest_framework import filters
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from .models import Company, BusinessUnit, Metric, MetricValue
@@ -42,3 +43,13 @@ class MetricViewSet(viewsets.ModelViewSet):
 class MetricValueViewSet(viewsets.ModelViewSet):
     queryset = MetricValue.objects.all()
     serializer_class = MetricValueSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['metric__name', 'year']
+    ordering_fields = ['year', 'metric']
+
+class CompanyMetricsSummaryView(APIView):
+    def get(self, request, company_id):
+        summary = get_company_metrics_summary(company_id)
+        if not summary:
+            return Response({"detail": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(summary)
